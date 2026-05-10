@@ -9,6 +9,8 @@ import {
   pleaTypes,
   predictSentence,
 } from '../data/mockData';
+import { CaseComparison } from './CaseComparison';
+console.log("districts loaded:", districts);
 
 type Prediction = {
   predictedMonths: number;
@@ -366,8 +368,13 @@ export function Simulator() {
             Change only the <strong>race</strong> or <strong>district</strong> and watch how the predicted sentence changes.
             This is the core insight of SentenceGap: revealing how identical cases can receive different outcomes.
           </p>
-        </div>
-      </div>
-    </div>
-  );
+</div>
+
+<div className="mt-12">
+  <CaseComparison />
+</div>
+
+</div>
+</div>
+);
 }

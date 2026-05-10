@@ -158,7 +158,18 @@ Do not say discrimination is proven.
 @app.route("/api/seed")
 def seed():
     offenses = ["drug-trafficking", "fraud", "assault", "theft", "weapons"]
-    districts = ["ny-southern", "ca-northern", "tx-western", "fl-southern", "il-northern"]
+    districts = [
+    "alabama", "alaska", "arizona", "arkansas", "california", "colorado",
+    "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho",
+    "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana",
+    "maine", "maryland", "massachusetts", "michigan", "minnesota",
+    "mississippi", "missouri", "montana", "nebraska", "nevada",
+    "new-hampshire", "new-jersey", "new-mexico", "new-york",
+    "north-carolina", "north-dakota", "ohio", "oklahoma", "oregon",
+    "pennsylvania", "rhode-island", "south-carolina", "south-dakota",
+    "tennessee", "texas", "utah", "vermont", "virginia", "washington",
+    "west-virginia", "wisconsin", "wyoming"
+]
     races = ["white", "black", "hispanic", "asian", "other"]
     genders = ["male", "female"]
     lawyer_types = ["private", "public", "court-appointed"]
@@ -173,11 +184,8 @@ def seed():
     }
 
     district_factor = {
-        "ny-southern": 1.15,
-        "ca-northern": 0.9,
-        "tx-western": 1.35,
-        "fl-southern": 1.1,
-        "il-northern": 1.0,
+        district: random.uniform(0.85, 1.45)
+        for district in districts
     }
 
     race_factor = {

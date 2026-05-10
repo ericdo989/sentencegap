@@ -16,21 +16,16 @@ type Insights = {
   lowestDistrict: DistrictData;
 };
 
-const districtToState: Record<string, string> = {
-  'ny-southern': '36',
-  'ca-northern': '06',
-  'tx-western': '48',
-  'fl-southern': '12',
-  'il-northern': '17',
-};
+function normalizeName(name: string) {
+  return name.toLowerCase().replace(/\s+/g, '-');
+}
 
-const districtLabels: Record<string, string> = {
-  'ny-southern': 'NY Southern',
-  'ca-northern': 'CA Northern',
-  'tx-western': 'TX Western',
-  'fl-southern': 'FL Southern',
-  'il-northern': 'IL Northern',
-};
+function formatName(name: string) {
+  return name
+    .split('-')
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 function getColor(avgMonths: number) {
   if (avgMonths >= 70) return '#dc2626';
@@ -46,8 +41,11 @@ export function DistrictDisparityMap() {
   useEffect(() => {
     fetch('http://localhost:5000/api/insights')
       .then((res) => res.json())
-      .then((data) => setInsights(data))
-      .catch((err) => console.error('Failed to load insights:', err));
+      .then((data) => {
+        console.log('MAP INSIGHTS:', data);
+        setInsights(data);
+      })
+      .catch((err) => console.error('Failed to load map insights:', err));
   }, []);
 
   if (!insights) {
@@ -58,13 +56,10 @@ export function DistrictDisparityMap() {
     );
   }
 
-  const stateData: Record<string, DistrictData> = {};
+  const districtLookup: Record<string, DistrictData> = {};
 
-  insights.sentenceByDistrict.forEach((district) => {
-    const stateId = districtToState[district.district];
-    if (stateId) {
-      stateData[stateId] = district;
-    }
+  insights.sentenceByDistrict.forEach((item) => {
+    districtLookup[item.district] = item;
   });
 
   return (
@@ -75,7 +70,7 @@ export function DistrictDisparityMap() {
             National Sentencing Disparity Map
           </h2>
           <p className="text-sm text-gray-600">
-            Live district-level averages from MongoDB Atlas
+            Live state-level averages from MongoDB Atlas
           </p>
         </div>
 
@@ -88,7 +83,9 @@ export function DistrictDisparityMap() {
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const data = stateData[geo.id];
+              const stateName = geo.properties.name;
+              const districtKey = normalizeName(stateName);
+              const data = districtLookup[districtKey];
 
               return (
                 <Geography
@@ -126,7 +123,7 @@ export function DistrictDisparityMap() {
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="text-sm text-red-700">Highest Avg Sentence</div>
           <div className="text-lg font-semibold text-red-900">
-            {districtLabels[insights.highestDistrict.district]}
+            {formatName(insights.highestDistrict.district)}
           </div>
           <div className="text-sm text-red-800">
             {insights.highestDistrict.avgMonths} months
@@ -136,7 +133,7 @@ export function DistrictDisparityMap() {
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="text-sm text-green-700">Lowest Avg Sentence</div>
           <div className="text-lg font-semibold text-green-900">
-            {districtLabels[insights.lowestDistrict.district]}
+            {formatName(insights.lowestDistrict.district)}
           </div>
           <div className="text-sm text-green-800">
             {insights.lowestDistrict.avgMonths} months
@@ -144,11 +141,11 @@ export function DistrictDisparityMap() {
         </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <div className="text-sm text-gray-600">Selected District</div>
+          <div className="text-sm text-gray-600">Selected State</div>
           {selected ? (
             <>
               <div className="text-lg font-semibold text-gray-900">
-                {districtLabels[selected.district]}
+                {formatName(selected.district)}
               </div>
               <div className="text-sm text-gray-700">
                 Avg: {selected.avgMonths} months · {selected.cases} cases

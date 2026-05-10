@@ -5,6 +5,7 @@ import { Simulator } from './pages/Simulator';
 import { Dashboard } from './pages/Dashboard';
 import { Report } from './pages/Report';
 import { OutlierCases } from './pages/OutlierCases';
+import { CaseComparison } from './pages/CaseComparison';
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
       { path: 'outliers', Component: OutlierCases },
       { path: 'dashboard', Component: Dashboard },
       { path: 'report', Component: Report },
+      { path: 'compare', Component: CaseComparison },
     ],
   },
 ]);
